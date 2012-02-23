@@ -51,13 +51,12 @@ if [ -f sorted_file_list ]; then rm sorted_file_list; fi
 sort temp_file_list > sorted_file_list
 
 # Open them in vim
-#gvim --servername $vim_server_name --remote-tab `awk 'NR=1 { printf("%s ", $1) }' < sorted_file_list`
 echo Opening...
 cat sorted_file_list | while read arg; do
 	echo [$arg]
 	gvim --servername $vim_server_name --remote-tab $arg
 done
-echo ...Done.
+echo ...done.
 
 # Tidy up
 rm temp_file_list
