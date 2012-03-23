@@ -8,7 +8,7 @@ update_windows()
 	cd msys
 
 	echo Updating MSYS build environment...
-	cmake -G "MSYS Makefiles" ../..
+	CC='../../cc_args.py gcc' CXX='../../cc_args.py g++' cmake -G "MSYS Makefiles" ../..
 	cd ..
 
 	if [ ! -d vs ]; then mkdir vs; fi
@@ -33,7 +33,7 @@ update_windows()
 update_linux()
 {
 	echo Updating Linux build environment...
-	cmake ..
+	CC='../cc_args.py /d/msysgit/msysgit/mingw/bin/gcc.exe' CXX='../cc_args.py /d/msysgit/msysgit/mingw/bin/g++.exe' cmake ..
 	cd ..
 
 	# utility script to run make from project root
