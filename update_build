@@ -8,7 +8,7 @@ update_windows()
 	cd msys
 
 	echo Updating MSYS build environment...
-	CC=`../../cc_args.py gcc` CXX=`../../cc_args.py g++` cmake -G "MSYS Makefiles" ../..
+	CC=`~/cc_args.py gcc` CXX=`~/cc_args.py g++` cmake -G "MSYS Makefiles" ../..
 	cd ..
 
 	if [ ! -d vs ]; then mkdir vs; fi
