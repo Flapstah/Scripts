@@ -31,20 +31,22 @@ if [ $vim_server_exists = false ]; then
 		do
 			path_to_test=$arg
 			if [ -f $path_to_test ]; then path_to_test=`dirname $path_to_test`; fi
-			find $path_to_test -name '.*.swp' >> temp_file_list
+			find $path_to_test -name '.*.swp' | sed -e 's/\.\///' >> temp_file_list
 		done
 	else
 		find -name '.*.swp' >> temp_file_list
 	fi
+	sort -u temp_file_list > sorted_file_list
 
 	# remove the files
-	cat temp_file_list | while read arg; do
+	cat sorted_file_list | while read arg; do
 		echo ...removing $arg...
 		rm $arg
 	done
 
 	# Tidy up
 	rm temp_file_list
+	rm sorted_file_list
 
 	echo Starting $vim_server_name server...
  	gvim --servername $vim_server_name &
