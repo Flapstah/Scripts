@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Variables
-vim_server_exists=false
 vim_server_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
 
-# Function to check for the vim server
-check_vim_server_exists()
+# Function to remove any temporary .swp files from crashed vim instances
+remove_old_swp_files()
 {
+	vim_server_exists=false
 	for server in `vim --serverlist`
 	do
 		if [ $server = $vim_server_name ]; then
@@ -14,78 +14,62 @@ check_vim_server_exists()
 			return
 		fi
 	done
+
+	if [ $vim_server_exists = false ]; then
+		# Collate all the files
+		if [ -f temp_file_list ]; then rm temp_file_list; fi
+		if [ $# -gt 0 ]; then
+			for arg in "$@"
+			do
+				path_to_test=$arg
+				if [ -f $path_to_test ]; then path_to_test=`dirname $path_to_test`; fi
+				find $path_to_test -name '.*.swp' | sed -e 's/\.\///' >> temp_file_list
+			done
+		else
+			find -name '.*.swp' >> temp_file_list
+		fi
+
+		# remove the files
+		for arg in `cat temp_file_list`; do
+			echo ...removing $arg...
+			rm $arg
+		done
+	fi
 }
 
-# Start gvim in server mode, if it doesn't already exist
-echo Checking for $vim_server_name server...
-check_vim_server_exists
-
-if [ $vim_server_exists = false ]; then
-	# Remove all .*.swp files that might be hanging around from crashed Vim
-	# instances
-
-	# Collate all the files
+# Collate all the files
+collate_file_list()
+{
 	if [ -f temp_file_list ]; then rm temp_file_list; fi
 	if [ $# -gt 0 ]; then
 		for arg in "$@"
 		do
-			path_to_test=$arg
-			if [ -f $path_to_test ]; then path_to_test=`dirname $path_to_test`; fi
-			find $path_to_test -name '.*.swp' | sed -e 's/\.\///' >> temp_file_list
+			find $arg -name '*.cpp' >> temp_file_list
+			find $arg -name '*.h' >> temp_file_list
 		done
 	else
-		find -name '.*.swp' >> temp_file_list
-	fi
-	sort -u temp_file_list > sorted_file_list
-
-	# remove the files
-	cat sorted_file_list | while read arg; do
-		echo ...removing $arg...
-		rm $arg
-	done
-
-	# Tidy up
-	rm temp_file_list
-	rm sorted_file_list
-
-	echo Starting $vim_server_name server...
- 	gvim --servername $vim_server_name &
-fi
-
-while [ $vim_server_exists = false ]; do
-	echo ...waiting for $vim_server_name server to start...
-	sleep 1
-	check_vim_server_exists
-done
-
-echo ...$vim_server_name server started.
-
-# Collate all the files
-if [ -f temp_file_list ]; then rm temp_file_list; fi
-if [ $# -gt 0 ]; then
-	for arg in "$@"
-	do
-		find $arg -name '*.cpp' >> temp_file_list
-		find $arg -name '*.h' >> temp_file_list
-	done
-else
 		find -name '*.cpp' >> temp_file_list
 		find -name '*.h' >> temp_file_list
-fi
+	fi
 
-# Sort them...
-if [ -f sorted_file_list ]; then rm sorted_file_list; fi
-sort temp_file_list > sorted_file_list
+	# Sort them...
+	if [ -f sorted_file_list ]; then rm sorted_file_list; fi
+	sort temp_file_list > sorted_file_list
+}
 
-# Open them in vim
-echo Opening...
-cat sorted_file_list | while read arg; do
-	echo [$arg]
-	gvim --servername $vim_server_name --remote-tab $arg
-done
-echo ...done.
+tidy_up()
+{
+	if [ -f temp_file_list ]; then rm temp_file_list; fi
+	if [ -f sorted_file_list ]; then rm sorted_file_list; fi
+}
 
-# Tidy up
-rm temp_file_list
-rm sorted_file_list
+# Main script
+remove_old_swp_files
+collate_file_list $@
+
+# Open them in vim (N.B. remember to set tabpagemax to 999 or you'll only get 10
+# tabs max by default and the rest of the files will be split windows)
+gvim --servername $vim_server_name --remote-tab-silent `cat sorted_file_list` &
+
+tidy_up
 
