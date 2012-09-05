@@ -21,7 +21,7 @@ update_windows()
 	# utility script to run make from project root
 	echo "#!/bin/bash" > make
 	echo "cd build/msys" >> make
-	echo "make $@" >> make
+	echo "make \$@" >> make
 
 	return
 }
@@ -39,7 +39,7 @@ update_linux()
 	# utility script to run make from project root
 	echo "#!/bin/bash" > make
 	echo "cd build" >> make
-	echo "make $@" >> make
+	echo "make \$@" >> make
 
 	return
 }
