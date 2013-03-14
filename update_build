@@ -35,15 +35,15 @@ update_windows()
 	echo "make \$@" >> make
 
 	# utility script to run the build from project root
-	echo "#!/bin/bash" > make
-	echo "cd build/msys/debug" >> make
-	echo "if [ \$# -gt 0 ]; then" >> make
-	echo "	case \$1 in" >> make
-	echo "		[dD][eE][bB][uU][gG]) shift;;" >> make
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; cd ../release;;" >> make
-	echo "	esac" >> make
-	echo "fi" >> make
-	echo "./test \$@" >> make
+	echo "#!/bin/bash" > run
+	echo "cd build/msys/debug" >> run
+	echo "if [ \$# -gt 0 ]; then" >> run
+	echo "	case \$1 in" >> run
+	echo "		[dD][eE][bB][uU][gG]) shift;;" >> run
+	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; cd ../release;;" >> run
+	echo "	esac" >> run
+	echo "fi" >> run
+	echo "./test \$@" >> run
 
 	return
 }
@@ -78,15 +78,15 @@ update_linux()
 	echo "make \$@" >> make
 
 	# utility script to run the build from project root
-	echo "#!/bin/bash" > make
-	echo "cd build/debug" >> make
-	echo "if [ \$# -gt 0 ]; then" >> make
-	echo "	case \$1 in" >> make
-	echo "		[dD][eE][bB][uU][gG]) shift;;" >> make
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; cd ../release;;" >> make
-	echo "	esac" >> make
-	echo "fi" >> make
-	echo "./test \$@" >> make
+	echo "#!/bin/bash" > run
+	echo "cd build/debug" >> run
+	echo "if [ \$# -gt 0 ]; then" >> run
+	echo "	case \$1 in" >> run
+	echo "		[dD][eE][bB][uU][gG]) shift;;" >> run
+	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; cd ../release;;" >> run
+	echo "	esac" >> run
+	echo "fi" >> run
+	echo "./test \$@" >> run
 
 	return
 }
