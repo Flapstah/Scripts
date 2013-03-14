@@ -4,12 +4,15 @@
 # Windows bit
 update_windows()
 {
-	if [ ! -d msys ]; then mkdir msys; fi
-	cd msys
+	if [ ! -d build ]; then mkdir -p build/msys/{debug,release}; fi
 
-	echo Updating MSYS build environment...
-	cmake -G "MSYS Makefiles" ../..
-	cd ..
+	cd build/msys/debug
+	echo Updating MSYS debug build environment...
+	cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Debug ../../..
+	cd ../release
+	echo Updating MSYS release build environment...
+	cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release ../../..
+	cd ../..
 
 	if [ ! -d vs ]; then mkdir vs; fi
 	cd vs
@@ -32,9 +35,15 @@ update_windows()
 # Linux bit
 update_linux()
 {
-	echo Updating Linux build environment...
-	cmake ..
-	cd ..
+	if [ ! -d build ]; then mkdir -p build/{debug,release}; fi
+
+	cd build/debug
+	echo Updating Linux debug build environment...
+	cmake -DCMAKE_BUILD_TYPE=Debug ../..
+	cd ../release
+	echo Updating Linux release build environment...
+	cmake -DCMAKE_BUILD_TYPE=Debug ../..
+	ce ../..
 
 	# utility script to run make from project root
 	echo "#!/bin/bash" > make
@@ -46,14 +55,9 @@ update_linux()
 #
 ########################################
 
-if [ ! -d build ]; then mkdir build; fi
-cd build
-
 case $1 in
-[wW]) update_windows ;;
 [wW][iI][nN]) update_windows ;;
 [wW][iI][nN][dD][oO][wW][sS]) update_windows ;;
-[lL]) update_linux ;;
 [lL][iI][nN]) update_linux ;;
 [lL][iI][nN][uU][xX]) update_linux ;;
 *) echo "Invalid option [$1]"; exit ;;
