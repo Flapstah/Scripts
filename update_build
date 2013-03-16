@@ -62,7 +62,7 @@ update_linux()
 	cd ../release
 	echo Updating Linux release build environment...
 	cmake -DCMAKE_BUILD_TYPE=Debug ../..
-	ce ../..
+	cd ../..
 
 	# utility script to run make from project root
 	echo "#!/bin/bash" > make
@@ -87,6 +87,8 @@ update_linux()
 	echo "	esac" >> run
 	echo "fi" >> run
 	echo "./test \$@" >> run
+
+	chmod +x make run
 
 	return
 }
