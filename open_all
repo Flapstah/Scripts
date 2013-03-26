@@ -7,7 +7,7 @@ vim_server_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
 remove_old_swp_files()
 {
 	vim_server_exists=false
-	for server in `vim --serverlist`
+	for server in `gvim --serverlist`
 	do
 		if [ $server = $vim_server_name ]; then
 			vim_server_exists=true
