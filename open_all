@@ -3,40 +3,6 @@
 # Variables
 vim_server_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
 
-# Function to remove any temporary .swp files from crashed vim instances
-remove_old_swp_files()
-{
-	vim_server_exists=false
-	for server in `gvim --serverlist`
-	do
-		if [ $server = $vim_server_name ]; then
-			vim_server_exists=true
-			return
-		fi
-	done
-
-	if [ $vim_server_exists = false ]; then
-		# Collate all the files
-		if [ -f temp_file_list ]; then rm temp_file_list; fi
-		if [ $# -gt 0 ]; then
-			for arg in "$@"
-			do
-				path_to_test=$arg
-				if [ -f $path_to_test ]; then path_to_test=`dirname $path_to_test`; fi
-				find $path_to_test -name '.*.swp' | sed -e 's/\.\///' >> temp_file_list
-			done
-		else
-			find -name '.*.swp' >> temp_file_list
-		fi
-
-		# remove the files
-		for arg in `cat temp_file_list`; do
-			echo ...removing $arg...
-			rm $arg
-		done
-	fi
-}
-
 # Collate all the files
 collate_file_list()
 {
@@ -47,31 +13,37 @@ collate_file_list()
 			find $arg -name '*.cpp' >> temp_file_list
 			find $arg -name '*.c' >> temp_file_list
 			find $arg -name '*.h' >> temp_file_list
+			find $arg -name '*.inl' >> temp_file_list
 		done
 	else
 		find -name '*.cpp' >> temp_file_list
 		find -name '*.c' >> temp_file_list
 		find -name '*.h' >> temp_file_list
+		find -name '*.inl' >> temp_file_list
 	fi
 
-	# Sort them...
-	if [ -f sorted_file_list ]; then rm sorted_file_list; fi
-	sort temp_file_list > sorted_file_list
+	# Remove any temporary .swp files from crashed vim instances
+	for file in `cat temp_file_list`
+	do
+		if [ -f $file.swp ]; then
+		 	echo Removing old swap file for $file...
+			rm $file.swp
+		fi
+	done
 }
 
 tidy_up()
 {
 	if [ -f temp_file_list ]; then rm temp_file_list; fi
-	if [ -f sorted_file_list ]; then rm sorted_file_list; fi
 }
 
 # Main script
-remove_old_swp_files
 collate_file_list $@
 
 # Open them in vim (N.B. remember to set tabpagemax to 999 or you'll only get 10
 # tabs max by default and the rest of the files will be split windows)
-gvim --servername $vim_server_name --remote-tab-silent `cat sorted_file_list` &
+echo Sending files to $vim_server_name.GVIM instance...
+gvim --servername $vim_server_name.GVIM --remote-tab-silent `cat temp_file_list` &
 
 tidy_up
 
