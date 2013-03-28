@@ -10,16 +10,10 @@ collate_file_list()
 	if [ $# -gt 0 ]; then
 		for arg in "$@"
 		do
-			find $arg -name '*.cpp' >> temp_file_list
-			find $arg -name '*.c' >> temp_file_list
-			find $arg -name '*.h' >> temp_file_list
-			find $arg -name '*.inl' >> temp_file_list
+			find $arg -regex '.*\.\(c\|cpp\|h\|inl\)$' >> temp_file_list
 		done
 	else
-		find -name '*.cpp' >> temp_file_list
-		find -name '*.c' >> temp_file_list
-		find -name '*.h' >> temp_file_list
-		find -name '*.inl' >> temp_file_list
+		find -regex '.*\.\(c\|cpp\|h\|inl\)$' >> temp_file_list
 	fi
 
 	# Remove any temporary .swp files from crashed vim instances
