@@ -19,9 +19,9 @@ collate_file_list()
 	# Remove any temporary .swp files from crashed vim instances
 	for file in `cat temp_file_list`
 	do
-		if [ -f $file.swp ]; then
+		if [ -f ${file%/*}/.${file##*/}.swp ]; then
 		 	echo Removing old swap file for $file...
-			rm $file.swp
+			rm ${file%/*}/.${file##*/}.swp
 		fi
 	done
 }
