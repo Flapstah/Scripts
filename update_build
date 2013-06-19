@@ -61,7 +61,7 @@ update_linux()
 	cmake -DCMAKE_BUILD_TYPE=Debug ../..
 	cd ../release
 	echo Updating Linux release build environment...
-	cmake -DCMAKE_BUILD_TYPE=Debug ../..
+	cmake -DCMAKE_BUILD_TYPE=Release ../..
 	cd ../..
 
 	# utility script to run make from project root
