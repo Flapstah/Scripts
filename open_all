@@ -2,22 +2,30 @@
 
 # Variables
 vim_server_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
+temp_file_list=".open_all_file_list"
+
+# Remove any temporary files
+tidy_up()
+{
+	if [ -f ${temp_file_list} ]; then rm ${temp_file_list}; fi
+}
 
 # Collate all the files
 collate_file_list()
 {
-	if [ -f temp_file_list ]; then rm temp_file_list; fi
+	tidy_up
+
 	if [ $# -gt 0 ]; then
 		for arg in "$@"
 		do
-			find $arg -regex '.*\.\(c\|cpp\|h\|hpp\|inl\)$' >> temp_file_list
+			find $arg -regex '.*\.\(c\|cpp\|h\|hpp\|inl\)$' >> ${temp_file_list}
 		done
 	else
-		find -regex '.*\.\(c\|cpp\|h\|hpp\|inl\)$' >> temp_file_list
+		find -regex '.*\.\(c\|cpp\|h\|hpp\|inl\)$' >> ${temp_file_list}
 	fi
 
 	# Remove any temporary .swp files from crashed vim instances
-	for file in `cat temp_file_list`
+	for file in `cat ${temp_file_list}`
 	do
 		if [ -f ${file%/*}/.${file##*/}.swp ]; then
 		 	echo Removing old swap file for $file...
@@ -26,18 +34,14 @@ collate_file_list()
 	done
 }
 
-tidy_up()
-{
-	if [ -f temp_file_list ]; then rm temp_file_list; fi
-}
-
 # Main script
 collate_file_list $@
 
 # Open them in vim (N.B. remember to set tabpagemax to 999 or you'll only get 10
 # tabs max by default and the rest of the files will be split windows)
 echo Sending files to $vim_server_name.GVIM instance...
-gvim --servername $vim_server_name.GVIM --remote-tab-silent `cat temp_file_list` &
+gvim --servername $vim_server_name.GVIM --remote-tab-silent `cat ${temp_file_list}` &
 
-tidy_up
+# N.B. We can't call tidy_up() here because the temporary file list will get
+# deleted before gvim has a chance to process it.
 
