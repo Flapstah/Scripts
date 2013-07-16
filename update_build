@@ -23,26 +23,30 @@ update_windows()
 
 	# utility script to run make from project root
 	echo "#!/bin/bash" > make
-	echo "cd build/msys/debug" >> make
-	echo "build=\"debug\"" >> make
+	echo "cd build/msys" >> make
+	echo "build=debug" >> make
 	echo "if [ \$# -gt 0 ]; then" >> make
 	echo "	case \$1 in" >> make
-	echo "		[dD][eE][bB][uU][gG]) shift;;" >> make
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; cd ../release; build=release ;;" >> make
+	echo "		[dD][eE][bB][uU][gG]) shift; build=debug ;;" >> make
+	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; build=release ;;" >> make
 	echo "	esac" >> make
 	echo "fi" >> make
-	echo "echo Building \$build..." >> make
+	echo "echo [\$build] \$@" >> make
+	echo "cd \$build" >> make
 	echo "make \$@" >> make
 
 	# utility script to run the build from project root
 	echo "#!/bin/bash" > run
-	echo "cd build/msys/debug" >> run
+	echo "cd build/msys" >> run
+	echo "build=debug" >> run
 	echo "if [ \$# -gt 0 ]; then" >> run
 	echo "	case \$1 in" >> run
-	echo "		[dD][eE][bB][uU][gG]) shift;;" >> run
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; cd ../release;;" >> run
+	echo "		[dD][eE][bB][uU][gG]) shift; build=debug ;;" >> run
+	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; build=release ;;" >> run
 	echo "	esac" >> run
 	echo "fi" >> run
+	echo "echo [\$build] \$@" >> run
+	echo "cd \$build" >> run
 	echo "./test \$@" >> run
 
 	return
