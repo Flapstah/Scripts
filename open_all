@@ -3,17 +3,30 @@
 # Variables
 vim_server_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
 temp_file_list=".open_all_file_list"
+should_remove_temporary_file_list=1
 
 # Remove any temporary files
-tidy_up()
+remove_temporary_file_list()
 {
 	if [ -f ${temp_file_list} ]; then rm ${temp_file_list}; fi
+}
+
+# Remove any temporary .swp files from crashed vim instances
+remove_swap_files()
+{
+	for file in `cat ${temp_file_list}`
+	do
+		if [ -f ${file%/*}/.${file##*/}.swp ]; then
+		 	echo Removing old swap file for $file...
+			rm ${file%/*}/.${file##*/}.swp
+		fi
+	done
 }
 
 # Collate all the files
 collate_file_list()
 {
-	tidy_up
+	echo Generating file list...
 
 	if [ $# -gt 0 ]; then
 		for arg in "$@"
@@ -24,24 +37,26 @@ collate_file_list()
 		find -regex '.*\.\(c\|cpp\|h\|hpp\|inl\)$' >> ${temp_file_list}
 	fi
 
-	# Remove any temporary .swp files from crashed vim instances
-	for file in `cat ${temp_file_list}`
-	do
-		if [ -f ${file%/*}/.${file##*/}.swp ]; then
-		 	echo Removing old swap file for $file...
-			rm ${file%/*}/.${file##*/}.swp
-		fi
-	done
 }
 
 # Main script
-collate_file_list $@
+
+case $1 in
+--last) echo Opening file list from previous session...; should_remove_temporary_file_list=0 ;;
+*) ;;
+esac
+
+remove_swap_files
+if [ $should_remove_temporary_file_list -ne 0 ]; then
+	remove_temporary_file_list
+	collate_file_list $@
+fi
 
 # Open them in vim (N.B. remember to set tabpagemax to 999 or you'll only get 10
 # tabs max by default and the rest of the files will be split windows)
 echo Sending files to $vim_server_name.GVIM instance...
 gvim --servername $vim_server_name.GVIM --remote-tab-silent `cat ${temp_file_list}` &
 
-# N.B. We can't call tidy_up() here because the temporary file list will get
-# deleted before gvim has a chance to process it.
+# N.B. We can't call remove_temporary_file_list() here because the temporary file
+# list will get deleted before gvim has a chance to process it.
 
