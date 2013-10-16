@@ -18,7 +18,7 @@ update_windows()
 	cd vs
 
 	echo Updating Visual Studio build environment...
-	cmake ../..
+	cmake -G "Visual Studio 10 Win64" ../..
 	cd ../..
 
 	# utility script to run make from project root
