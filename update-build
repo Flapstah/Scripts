@@ -49,6 +49,20 @@ update_windows()
 	echo "cd \$build" >> run
 	echo "./test \$@" >> run
 
+	# utility script to run the unit tests from project root
+	echo "#!/bin/bash" > unit_test
+	echo "cd build/msys" >> unit_test
+	echo "build=debug" >> unit_test
+	echo "if [ \$# -gt 0 ]; then" >> unit_test
+	echo "	case \$1 in" >> unit_test
+	echo "		[dD][eE][bB][uU][gG]) shift; build=debug ;;" >> unit_test
+	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; build=release ;;" >> unit_test
+	echo "	esac" >> unit_test
+	echo "fi" >> unit_test
+	echo "echo [\$build] \$@" >> unit_test
+	echo "cd \$build" >> unit_test
+	echo "./unit_test \$@" >> unit_test
+
 	return
 }
 #
@@ -78,7 +92,7 @@ update_linux()
 	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; cd ../release; build=release ;;" >> make
 	echo "	esac" >> make
 	echo "fi" >> make
-	echo "echo Building \$build..." >> make
+	echo "echo [\$build] \$@" >> make
 	echo "make \$@" >> make
 
 	# utility script to run the build from project root
@@ -90,9 +104,22 @@ update_linux()
 	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; cd ../release;;" >> run
 	echo "	esac" >> run
 	echo "fi" >> run
+	echo "echo [\$build] \$@" >> run
 	echo "./test \$@" >> run
 
-	chmod +x make run
+	# utility script to run the unit tests from project root
+	echo "#!/bin/bash" > unit_test
+	echo "cd build/debug" >> unit_test
+	echo "if [ \$# -gt 0 ]; then" >> unit_test
+	echo "	case \$1 in" >> unit_test
+	echo "		[dD][eE][bB][uU][gG]) shift;;" >> unit_test
+	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; cd../release ;;" >> unit_test
+	echo "	esac" >> unit_test
+	echo "fi" >> unit_test
+	echo "echo [\$build] \$@" >> unit_test
+	echo "./unit_test \$@" >> unit_test
+
+	chmod +x make run unit_test
 
 	return
 }
