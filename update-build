@@ -50,18 +50,18 @@ update_windows()
 	echo "./test \$@" >> run
 
 	# utility script to run the unit tests from project root
-	echo "#!/bin/bash" > unit_test
-	echo "cd build/msys" >> unit_test
-	echo "build=debug" >> unit_test
-	echo "if [ \$# -gt 0 ]; then" >> unit_test
-	echo "	case \$1 in" >> unit_test
-	echo "		[dD][eE][bB][uU][gG]) shift; build=debug ;;" >> unit_test
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; build=release ;;" >> unit_test
-	echo "	esac" >> unit_test
-	echo "fi" >> unit_test
-	echo "echo [\$build] \$@" >> unit_test
-	echo "cd \$build" >> unit_test
-	echo "./unit_test \$@" >> unit_test
+	echo "#!/bin/bash" > "unit-test"
+	echo "cd build/msys" >> "unit-test"
+	echo "build=debug" >> "unit-test"
+	echo "if [ \$# -gt 0 ]; then" >> "unit-test"
+	echo "	case \$1 in" >> "unit-test"
+	echo "		[dD][eE][bB][uU][gG]) shift; build=debug ;;" >> "unit-test"
+	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; build=release ;;" >> "unit-test"
+	echo "	esac" >> "unit-test"
+	echo "fi" >> "unit-test"
+	echo "echo [\$build] \$@" >> "unit-test"
+	echo "cd \$build" >> "unit-test"
+	echo "./unit-test \$@" >> "unit-test"
 
 	return
 }
