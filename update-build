@@ -1,6 +1,39 @@
 #!/bin/bash
 
 ########################################
+# Make scripts
+make_script_stub()
+{
+	echo "#!/bin/bash" > $1
+	echo "config=debug" >> $1
+	echo "if [ \$# -gt 0 ]; then" >> $1
+	echo "	case \$1 in" >> $1
+	echo "		[dD][eE][bB][uU][gG]) shift; config=debug ;;" >> $1
+	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; config=release ;;" >> $1
+	echo "	esac" >> $1
+	echo "fi" >> $1
+	echo "echo [\$config] \$@" >> $1
+}
+
+make_scripts()
+{
+	# utility script to run make from project root
+	make_script_stub "make"
+	echo "cd build/$1\$config" >> make
+	echo "make \$@" >> make
+
+	# utility script to run the build from project root
+	make_script_stub "run"
+	echo "build/$1\$config/test \$@" >> run
+
+	# utility script to run the unit tests from project root
+	make_script_stub "unit-test"
+	echo "build/$1\$config/unit-test -log unit-test.log \$@" >> "unit-test"
+}
+#
+########################################
+
+########################################
 # Windows bit
 update_windows()
 {
@@ -21,42 +54,7 @@ update_windows()
 	cmake -G "Visual Studio 10 Win64" ../..
 	cd ../..
 
-	# utility script to run make from project root
-	echo "#!/bin/bash" > make
-	echo "config=debug" >> make
-	echo "if [ \$# -gt 0 ]; then" >> make
-	echo "	case \$1 in" >> make
-	echo "		[dD][eE][bB][uU][gG]) shift; config=debug ;;" >> make
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; config=release ;;" >> make
-	echo "	esac" >> make
-	echo "fi" >> make
-	echo "echo [\$config] \$@" >> make
-	echo "cd build/msys/\$config" >> make
-	echo "make \$@" >> make
-
-	# utility script to run the build from project root
-	echo "#!/bin/bash" > run
-	echo "config=debug" >> run
-	echo "if [ \$# -gt 0 ]; then" >> run
-	echo "	case \$1 in" >> run
-	echo "		[dD][eE][bB][uU][gG]) shift; config=debug ;;" >> run
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; config=release ;;" >> run
-	echo "	esac" >> run
-	echo "fi" >> run
-	echo "echo [\$config] \$@" >> run
-	echo "build/msys/\$config/test \$@" >> run
-
-	# utility script to run the unit tests from project root
-	echo "#!/bin/bash" > "unit-test"
-	echo "config=debug" >> "unit-test"
-	echo "if [ \$# -gt 0 ]; then" >> "unit-test"
-	echo "	case \$1 in" >> "unit-test"
-	echo "		[dD][eE][bB][uU][gG]) shift; config=debug ;;" >> "unit-test"
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; config=release ;;" >> "unit-test"
-	echo "	esac" >> "unit-test"
-	echo "fi" >> "unit-test"
-	echo "echo [\$config] \$@" >> "unit-test"
-	echo "build/msys/\$config/unit-test \$@" >> "unit-test"
+	make_scripts "msys/"
 
 	return
 }
@@ -77,42 +75,7 @@ update_linux()
 	cmake -DCMAKE_BUILD_TYPE=Release ../..
 	cd ../..
 
-	# utility script to run make from project root
-	echo "#!/bin/bash" > make
-	echo "config=debug" >> make
-	echo "if [ \$# -gt 0 ]; then" >> make
-	echo "	case \$1 in" >> make
-	echo "		[dD][eE][bB][uU][gG]) shift; config=debug ;;" >> make
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; config=release ;;" >> make
-	echo "	esac" >> make
-	echo "fi" >> make
-	echo "echo [\$config] \$@" >> make
-	echo "cd build/\$config" >> make
-	echo "make \$@" >> make
-
-	# utility script to run the build from project root
-	echo "#!/bin/bash" > run
-	echo "config=debug" >> run
-	echo "if [ \$# -gt 0 ]; then" >> run
-	echo "	case \$1 in" >> run
-	echo "		[dD][eE][bB][uU][gG]) shift; config=debug ;;" >> run
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; config=release ;;" >> run
-	echo "	esac" >> run
-	echo "fi" >> run
-	echo "echo [\$config] \$@" >> run
-	echo "build/\$config/test \$@" >> run
-
-	# utility script to run the unit tests from project root
-	echo "#!/bin/bash" > "unit-test"
-	echo "config=debug" >> "unit-test"
-	echo "if [ \$# -gt 0 ]; then" >> "unit-test"
-	echo "	case \$1 in" >> "unit-test"
-	echo "		[dD][eE][bB][uU][gG]) shift; config=debug ;;" >> "unit-test"
-	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; config=release ;;" >> "unit-test"
-	echo "	esac" >> "unit-test"
-	echo "fi" >> "unit-test"
-	echo "echo [\$config] \$@" >> "unit-test"
-	echo "build/\$config/unit-test \$@" >> "unit-test"
+	make_scripts
 
 	chmod +x make run unit_test
 
