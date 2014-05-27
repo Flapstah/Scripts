@@ -28,7 +28,7 @@ make_scripts()
 
 	# utility script to run the unit tests from project root
 	make_script_stub "unit-test"
-	echo "build/$1\$config/unit-test -log unit-test.log \$@" >> "unit-test"
+	echo "build/$1\$config/unit-test --log unit-test.log \$@"
 }
 #
 ########################################
