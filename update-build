@@ -6,7 +6,7 @@ make_script_stub()
 {
 	echo "#!/bin/bash" > $1
 	echo "config=debug" >> $1
-	echo "if [ \$\# -gt 0 ]; then" >> $1
+	echo "if [ \$# -gt 0 ]; then" >> $1
 	echo "	case \$1 in" >> $1
 	echo "		[dD][eE][bB][uU][gG]) shift; config=debug ;;" >> $1
 	echo "		[rR][eE][lL][eE][aA][sS][eE]) shift; config=release ;;" >> $1
