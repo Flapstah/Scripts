@@ -24,7 +24,7 @@ make_scripts()
 
 	# utility script to run the build from project root
 	make_script_stub "run"
-	echo "build/$1\$config/test \$@" >> run
+	echo "build/$1\$config/game \$@" >> run
 
 	# utility script to run the unit tests from project root
 	make_script_stub "unit-test"
